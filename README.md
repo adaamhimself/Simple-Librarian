@@ -21,4 +21,4 @@ Add / Delete / Update / Find books
 /api/user/findAllBooks -> find all books in the collection  
 
 ## Frameworks used  
-Express, Mongoose, Passport, Jsonwebtoken, bcrypt, dotenv, cors
+Express, Mongoose, Passport, Jsonwebtoken, Bcrypt, Dotenv, Cors
