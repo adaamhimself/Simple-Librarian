@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const User = require('../models/user');
 const express = require('express');
 const app = express();
-const authService = require('../services/auth-service');
 const bcrypt = require('bcryptjs');
 
 // JWT
@@ -29,31 +31,43 @@ module.exports.register = function(data) {
         bcrypt.hash(data.password, 10)
         .then(hash => {
             data.password = hash;
-            authService.registerUser(data)
-            .then((data) => {
-                resolve(data);
-            })
-            .catch((err) => {
-                reject(err);
-            })
-        }).catch((err) => reject(err));
+            let newUser = new User(data);
+            if (newUser.role) newUser.role = "user";
+            newUser.save((err) => {
+                if(err) {
+                    if (err.code == 11000) {
+                        reject("User Name in use");
+                    } else {
+                        reject("Error creating the user: " + err);
+                    }
+                } else {
+                    resolve("User " + data.email  + " created");
+                }
+            });
+        });
     });
 }
 
 module.exports.login = function(data) {
     return new Promise(function (resolve, reject) {
-        authService.findUser(data)
-        .then((user) => {
-            var payload = { 
-                _id: user._id,
-                userName: user.email,
-                role: user.role
-            };
-            var token = jwt.sign(payload, jwtOptions.secretOrKey);
-            resolve(token);
-        })
-        .catch((err) => {
-            reject(err);
+        User.findOne({ email : data.email})
+        .exec()
+        .then(user => {
+            bcrypt.compare(data.password, user.password).then(res => {
+                if (res === true) {
+                    var payload = { 
+                        _id: user._id,
+                        userName: user.email,
+                        role: user.role
+                    };
+                    var token = jwt.sign(payload, jwtOptions.secretOrKey);
+                    resolve(token);
+                } else {
+                    reject("Incorrect password for " + data.email);
+                }
+            });
+        }).catch((err) => {
+            reject("User not found: " + data.email);
         });
     });
 }
