@@ -4,7 +4,7 @@
 Simple librarian is an application designed to store and maintain users' book collection. 
   
 ## Features  
-Authentication / Authorization
+Authentication / Authorization  
 Add / Delete / Update / Find books
   
 ## Routes  
