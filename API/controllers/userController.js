@@ -24,9 +24,9 @@ module.exports.addBook = function(data, user) {
     });
 }
 
-module.exports.deleteBook = function(data) {
+module.exports.deleteBook = function(data, user) {
     return new Promise(function (resolve, reject) {
-        Book.deleteOne({_id : data}).exec()
+        Book.deleteOne({_id : data, uploader : user._id}).exec()
         .then((message) => {
             resolve(`Book with id ${data} was deleted`);
         })
@@ -36,9 +36,9 @@ module.exports.deleteBook = function(data) {
     });
 }
 
-module.exports.updateBook = function(data) {
+module.exports.updateBook = function(data, user) {
     return new Promise(function (resolve, reject) {
-        Book.updateOne({_id: data.id}, { $set: data }).exec()
+        Book.updateOne({_id: data.id, uploader: user._id}, { $set: data }).exec()
         .then((message) => {
             resolve(`Book with id ${data.id} was updated`);
         })
@@ -48,9 +48,9 @@ module.exports.updateBook = function(data) {
     });
 }
 
-module.exports.findBookByTitle = function(data) {
+module.exports.findBookByTitle = function(data, user) {
     return new Promise(function (resolve, reject) {
-        Book.findOne({title: data}).exec()
+        Book.findOne({title : data, uploader : user._id}).exec()
         .then((message) => {
             resolve(message);
         })
@@ -60,9 +60,9 @@ module.exports.findBookByTitle = function(data) {
     });
 }
 
-module.exports.findAllBooks = function() {
+module.exports.findAllBooks = function(user) {
     return new Promise(function (resolve, reject) {
-        Book.find().exec()
+        Book.find({ uploader : user._id}).exec()
         .then((message) => {
             resolve(message);
         })
@@ -72,9 +72,9 @@ module.exports.findAllBooks = function() {
     });
 }
 
-module.exports.findBooksByGenre = function(data) {
+module.exports.findBooksByGenre = function(data, user) {
     return new Promise(function (resolve, reject) {
-        Book.find({ genre: data }).exec()
+        Book.find({ genre : data, uploader : user._id }).exec()
         .then((message) => {
             resolve(message);
         })
@@ -84,9 +84,9 @@ module.exports.findBooksByGenre = function(data) {
     });
 }
 
-module.exports.findBooksByAuthor = function(data) {
+module.exports.findBooksByAuthor = function(data, user) {
     return new Promise(function (resolve, reject) {
-        Book.find({ author: data }).exec()
+        Book.find({ author : data, uploader : user._id }).exec()
         .then((message) => {
             resolve(message);
         })
